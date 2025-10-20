@@ -1,0 +1,10 @@
+Arquitetura
+
+
+SiteFotos360/
+├── index.html
+├── .vscode/
+    ├── settings.json
+├── README
+└── assets/
+    ├── (todas as fotos 360)

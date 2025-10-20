@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Voos Guise - Sua Galeria de Viagens 360°</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.css">
+    <style>
+        /* Contêiner do visualizador 360°: Ocupa toda a tela */
+        .psv-container {
+            width: 100%;
+            height: 100vh;
+        }
+        /* Transição para as miniaturas da galeria */
+        .gallery-thumb {
+            transition: all 0.3s ease;
+        }
+        /* Efeito de hover nas miniaturas (aumenta e adiciona sombra) */
+        .gallery-thumb:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* Estilização da barra de rolagem da barra lateral (para Firefox) */
+        .sidebar {
+            scrollbar-width: thin;
+            scrollbar-color: #4f46e5 #e5e7eb;
+        }
+        /* Estilização da barra de rolagem da barra lateral (para Webkit/Chrome/Safari) */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #e5e7eb;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: #4f46e5;
+            border-radius: 6px;
+        }
+        /* Responsividade: Oculta a barra lateral em telas pequenas por padrão */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            /* Mostra a barra lateral quando a classe 'open' é aplicada via JS */
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans relative overflow-hidden">
+    <div class="flex h-screen">
+        <div class="sidebar bg-white w-64 md:w-80 border-r border-gray-200 flex flex-col overflow-y-auto absolute md:relative z-20 h-full">
+            <div class="p-4 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-indigo-600">Voos Guise</h1>
+                <p class="text-sm text-gray-500">Minha Coleção de Viagens 360°</p>
+            </div>
+            <div class="p-4">
+                <div class="relative">
+                    <input type="text" id="citySearch" placeholder="Buscar cidades..." class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    <i data-feather="search" class="absolute left-3 top-3 text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- Lista de cidades -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="space-y-1 px-2">
+                    <button class="city-btn w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50 flex items-center justify-between" data-city="cambira">
+                        <span>Cambira, Paraná</span>
+                        <i data-feather="chevron-right" class="text-gray-400"></i>
+                    </button>
+                    
+                    <button class="city-btn w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50 flex items-center justify-between" data-city="santa_fe">
+                        <span>Santa Fé do Sul, São Paulo</span>
+                        <i data-feather="chevron-right" class="text-gray-400"></i>
+                    </button>
+                    <!--
+                    <button class="city-btn w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50 flex items-center justify-between" data-city="newyork">
+                        <span>Nova Iorque, EUA</span>
+                        <i data-feather="chevron-right" class="text-gray-400"></i>
+                    </button>
+                    <button class="city-btn w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50 flex items-center justify-between" data-city="rio">
+                        <span>Rio de Janeiro, Brasil</span>
+                        <i data-feather="chevron-right" class="text-gray-400"></i>
+                    </button>
+                    <button class="city-btn w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50 flex items-center justify-between" data-city="sydney">
+                        <span>Sydney, Austrália</span>
+                        <i data-feather="chevron-right" class="text-gray-400"></i>
+                    </button>
+                    <button class="city-btn w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50 flex items-center justify-between" data-city="cape-town">
+                        <span>Cidade do Cabo, África do Sul</span>
+                        <i data-feather="chevron-right" class="text-gray-400"></i>
+                    </button>
+                    -->
+                </div>
+            </div>
+
+            <!-- Perfil do Usuário -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center space-x-2">
+                    <img src="assets/VoosGuiseLogo.png" class="w-10 h-10 rounded-full" alt="Perfil">
+                    <div>
+                        <p class="text-sm font-medium">Seu Perfil de Viagem</p>
+                        <a href="#" class="text-xs text-indigo-600">Ver Conta</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="sidebarToggle" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-full shadow-md">
+            <i data-feather="menu"></i>
+        </button>
+
+        <div class="flex-1 flex flex-col overflow-hidden bg-gray-100">
+            <div id="welcomeSection" class="flex-1 flex flex-col items-center justify-center p-8 text-center">
+                <div class="max-w-2xl mx-auto">
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">Bem-vindo ao Meu Mundo 360°</h1>
+                    <p class="text-lg text-gray-600 mb-8">Explore minha coleção de fotos imersivas 360° ao redor do globo. Selecione uma cidade na barra lateral para iniciar sua jornada virtual.</p>
+                    <div class="flex justify-center space-x-4">
+                        <button class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                            <i data-feather="compass" class="inline mr-2"></i> Explorar Galeria
+                        </button>
+                        <button class="px-6 py-3 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition">
+                            <i data-feather="user" class="inline mr-2"></i> Sobre Mim
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Galeria de Imagens -->
+                <div class="mt-12 grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                    <div class="relative rounded-xl overflow-hidden h-32 md:h-40">
+                        <img src="assets/Cambira171025.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Pré-visualização de Viagem">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
+                            <span class="text-white font-medium">Cambira</span>
+                        </div>
+                    </div>
+                    
+                        <div class="relative rounded-xl overflow-hidden h-32 md:h-40">
+                        <img src="assets/SantaFedoSul170925.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Pré-visualização de Viagem">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
+                            <span class="text-white font-medium">Santa Fé do Sul</span>
+                        </div>
+                    </div>
+                    <!-- Outros exemplos de cidades
+                    <div class="relative rounded-xl overflow-hidden h-32 md:h-40 md:block hidden">
+                        <img src="http://static.photos/travel/400x400/3" class="absolute inset-0 w-full h-full object-cover" alt="Pré-visualização de Viagem">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
+                            <span class="text-white font-medium">Nova Iorque</span>
+                        </div>
+                    </div>
+                -->
+
+                </div>
+            </div>
+
+            <div id="gallerySection" class="hidden flex-1 p-6 overflow-y-auto">
+                <div class="mb-6">
+                    <h2 id="galleryCity" class="text-2xl font-bold text-gray-800">Galeria da Cidade</h2>
+                    <p id="gallerySubtitle" class="text-gray-600">Selecione uma foto para ver em 360°</p>
+                </div>
+                <div id="photoGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    </div>
+            </div>
+
+            <div id="photoSphereViewer" class="hidden h-screen w-full"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializa os ícones Feather
+            feather.replace();
+
+            // Dados de amostra para fotos 360° (em uma aplicação real, viriam de uma API)
+            // As chaves são mantidas em inglês para corresponder ao data-city do HTML.
+            // local para alterar o endereçamento do url das imagens
+            const photoData = {
+                cambira: [
+                    { id: 'cambira1', title: 'EXPOCAM 18.10.25', url: 'assets/Cambira171025.jpg' },
+                    { id: 'cambira2', title: 'EXPOCAM 19.10.25', url: 'assets/CambiraExpocam19.jpg' },
+                    /* inserir mais fotos aqui
+                    { id: 'paris3', title: 'Ruas de Montmartre', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' },
+                    { id: 'paris4', title: 'Rio Sena', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' }
+                     */
+                ],
+                
+                santa_fe: [
+                    { id: 'santa_fe1', title: 'Praça das Arraras', url: 'assets/SantaFedoSul170925.jpg' },
+                    { id: 'santa_fe2', title: 'Igreja Matriz', url: 'assets/SantaFedoSul170925Igreja.jpg' },
+                    //{ id: 'tokyo3', title: 'Templo Senso-ji', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' }
+                ],
+                /* Exemplos
+                newyork: [
+                    { id: 'ny1', title: 'Times Square', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' },
+                    { id: 'ny2', title: 'Central Park', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' },
+                    { id: 'ny3', title: 'Estátua da Liberdade', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' },
+                    { id: 'ny4', title: 'Ponte do Brooklyn', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' }
+                ],
+                rio: [
+                    { id: 'rio1', title: 'Cristo Redentor', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' },
+                    { id: 'rio2', title: 'Praia de Copacabana', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' }
+                ],
+                sydney: [
+                    { id: 'syd1', title: 'Ópera de Sydney', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' },
+                    { id: 'syd2', title: 'Ponte da Baía', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' }
+                ],
+                'cape-town': [
+                    { id: 'ct1', title: 'Table Mountain', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' },
+                    { id: 'ct2', title: 'Cabo da Boa Esperança', url: 'https://photo-sphere-viewer-data.netlify.app/assets/sphere.jpg' }
+                ]
+                    */
+
+            };
+
+
+            // Nomes de cidades para exibição (traduzidos)
+            const cityNames = {
+                cambira: 'Cambira, Paraná',
+                santa_fe: 'Santa Fé do Sul, São Paulo',
+                newyork: 'Nova Iorque, EUA',
+                rio: 'Rio de Janeiro, Brasil',
+                sydney: 'Sydney, Austrália',
+                'cape-town': 'Cidade do Cabo, África do Sul'
+            };
+            
+            // Elementos DOM
+            const welcomeSection = document.getElementById('welcomeSection');
+            const gallerySection = document.getElementById('gallerySection');
+            const photoGrid = document.getElementById('photoGrid');
+            const galleryCity = document.getElementById('galleryCity');
+            const gallerySubtitle = document.getElementById('gallerySubtitle');
+            const photoSphereViewer = document.getElementById('photoSphereViewer');
+            const cityButtons = document.querySelectorAll('.city-btn');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const citySearch = document.getElementById('citySearch');
+
+            // Funcionalidade de Busca
+            citySearch.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                cityButtons.forEach(button => {
+                    // Busca pelo texto do botão (o nome da cidade traduzido)
+                    const cityName = button.textContent.toLowerCase();
+                    if (cityName.includes(searchTerm)) {
+                        button.style.display = 'flex';
+                    } else {
+                        button.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Alternar barra lateral móvel
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
+            });
+
+            // Handler de clique do botão da cidade
+            cityButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const city = this.dataset.city; // Pega a chave (ex: 'rio')
+                    loadCityGallery(city);
+                    // Oculta a barra lateral no mobile após a seleção
+                    sidebar.classList.remove('open'); 
+                });
+            });
+
+            // Carregar Galeria da Cidade
+            function loadCityGallery(city) {
+                // Mostra a seção da galeria e oculta as outras
+                welcomeSection.classList.add('hidden');
+                gallerySection.classList.remove('hidden');
+                photoSphereViewer.classList.add('hidden');
+
+                // Define o título da cidade
+                galleryCity.textContent = cityNames[city];
+                
+                // Texto do subtítulo traduzido
+                gallerySubtitle.textContent = `${photoData[city].length} fotos imersivas 360°`;
+
+                // Limpa as fotos existentes
+                photoGrid.innerHTML = '';
+
+                // Adiciona fotos à grade
+                photoData[city].forEach(photo => {
+                    const photoElement = document.createElement('div');
+                    // Classe para o efeito de hover
+                    photoElement.className = 'gallery-thumb bg-white rounded-lg overflow-hidden shadow-md cursor-pointer';
+                    photoElement.innerHTML = `
+                        <div class="relative aspect-square">
+                            <img src="${photo.url}" class="w-full h-full object-cover" alt="${photo.title}">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-3">
+                                <span class="text-white font-medium">${photo.title}</span>
+                            </div>
+                        </div>
+                    `;
+                    // Adiciona o ouvinte de evento para abrir o visualizador 360°
+                    photoElement.addEventListener('click', () => {
+                        openPhotoSphereViewer(photo.url, photo.title);
+                    });
+                    photoGrid.appendChild(photoElement);
+                });
+            }
+
+            // Abrir Visualizador de Fotos 360°
+            function openPhotoSphereViewer(imageUrl, title) {
+                gallerySection.classList.add('hidden');
+                photoSphereViewer.classList.remove('hidden');
+
+                // Inicializa ou atualiza o Photo Sphere Viewer
+                if (window.viewer) {
+                    // Se o visualizador já existe, apenas muda a imagem e o título
+                    viewer.setPanorama(imageUrl);
+                    viewer.setCaption(title);
+                } else {
+                    // Se é a primeira vez, inicializa a biblioteca
+                    window.viewer = new PhotoSphereViewer.Viewer({
+                        container: photoSphereViewer,
+                        panorama: imageUrl,
+                        caption: title,
+                        loadingImg: 'https://photo-sphere-viewer.js.org/assets/photosphere-logo.gif',
+                        // Configura a barra de navegação com o botão "Voltar"
+                        navbar: [
+                            'zoom',
+                            'move',
+                            'download',
+                            'fullscreen',
+                            {
+                                id: 'back',
+                                // Título e conteúdo traduzidos
+                                title: 'Voltar para Galeria',
+                                className: 'custom-button',
+                                content: '<i data-feather="arrow-left"></i>',
+                                onClick: () => {
+                                    // Ação de voltar: esconde o visualizador e mostra a galeria
+                                    photoSphereViewer.classList.add('hidden');
+                                    gallerySection.classList.remove('hidden');
+                                    // Re-inicializa os ícones Feather para o novo conteúdo (o ícone de seta)
+                                    feather.replace(); 
+                                }
+                            }
+                        ],
+                        defaultZoomLvl: 50,
+                        size: {
+                            width: '100%',
+                            height: '100%'
+                        }
+                    });
+                    // Re-inicializa os ícones Feather após a criação do viewer
+                    feather.replace();
+                }
+            }
+
+            /*
+            // O trecho abaixo foi removido durante a refatoração
+            // A lógica de clique fora para fechar o visualizador era complexa
+            // O botão 'Voltar para Galeria' dentro do visualizador é a forma mais robusta de fechar.
+            document.addEventListener('click', function(e) {
+                if (!photoSphereViewer.classList.contains('hidden') && 
+                    !e.target.closest('#photoSphereViewer') && 
+                    !e.target.closest('.custom-button')) {
+                    photoSphereViewer.classList.add('hidden');
+                    gallerySection.classList.remove('hidden');
+                }
+            });
+            */
+        });
+    </script>
+</body>
+</html>
