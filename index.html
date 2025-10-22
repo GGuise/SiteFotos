@@ -4,10 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Voos Guise - Sua Galeria de Viagens 360°</title>
+      
+    <!-- Tailwind (para estilização rápida) -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/uevent@2/dist/uevent.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/dot-prop@5/dist/index.min.js"></script>
+
+    <!-- Dependências do Photo Sphere Viewer -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.140.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uevent@2/browser.js"></script>
+
+    <!-- Biblioteca Photo Sphere Viewer v4 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.js"></script>
+
+
+
     <style>
         /* Contêiner do visualizador 360°: Ocupa toda a tela */
         .psv-container {
@@ -133,7 +149,7 @@
                 <!-- Galeria de Imagens -->
                 <div class="mt-12 grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
                     <div class="relative rounded-xl overflow-hidden h-32 md:h-40">
-                        <img src="assets/Cambira171025.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Pré-visualização de Viagem">
+                        <img src="assets/Cambira.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Pré-visualização de Viagem">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
                             <span class="text-white font-medium">Cambira</span>
                         </div>
@@ -369,5 +385,9 @@
             */
         });
     </script>
+
+    
 </body>
+
+
 </html>

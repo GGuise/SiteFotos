@@ -1,7 +1,7 @@
-Arquitetura
+Estrutura
 
 
-SiteFotos360/
+SiteFotos/
 ├── index.html
 ├── .vscode/
     ├── settings.json
