@@ -74,6 +74,122 @@
                 transform: translateX(0);
             }
         }
+
+        /* Estilos para os controles do Photo Sphere Viewer */
+        .psv-navbar {
+            background: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(10px);
+            border-radius: 12px !important;
+            padding: 8px !important;
+            margin: 10px !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .psv-navbar .custom-button {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 8px !important;
+            margin: 2px !important;
+            padding: 8px !important;
+            transition: all 0.3s ease !important;
+            color: white !important;
+            font-size: 14px !important;
+            min-width: 40px !important;
+            height: 40px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .psv-navbar .custom-button:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .psv-navbar .custom-button:active {
+            transform: translateY(0) !important;
+        }
+
+        /* Estilos específicos para diferentes tipos de controles */
+        .psv-navbar .zoom-control {
+            background: rgba(59, 130, 246, 0.2) !important;
+            border-color: rgba(59, 130, 246, 0.4) !important;
+        }
+
+        .psv-navbar .move-control {
+            background: rgba(16, 185, 129, 0.2) !important;
+            border-color: rgba(16, 185, 129, 0.4) !important;
+        }
+
+        .psv-navbar .fullscreen-control {
+            background: rgba(245, 158, 11, 0.2) !important;
+            border-color: rgba(245, 158, 11, 0.4) !important;
+        }
+
+        .psv-navbar .download-control {
+            background: rgba(139, 92, 246, 0.2) !important;
+            border-color: rgba(139, 92, 246, 0.4) !important;
+        }
+
+        .psv-navbar .gyro-control {
+            background: rgba(236, 72, 153, 0.2) !important;
+            border-color: rgba(236, 72, 153, 0.4) !important;
+        }
+
+        .psv-navbar .close-control {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: rgba(239, 68, 68, 0.4) !important;
+        }
+
+        /* Responsividade para controles em dispositivos móveis */
+        @media (max-width: 768px) {
+            .psv-navbar {
+                margin: 5px !important;
+                padding: 6px !important;
+                border-radius: 8px !important;
+            }
+
+            .psv-navbar .custom-button {
+                margin: 1px !important;
+                padding: 6px !important;
+                min-width: 36px !important;
+                height: 36px !important;
+                font-size: 12px !important;
+            }
+
+            /* Organiza os controles em linhas para mobile */
+            .psv-navbar {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                max-width: calc(100vw - 10px) !important;
+            }
+        }
+
+        /* Estilo para botões ativos */
+        .psv-navbar .custom-button.active {
+            background: rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5) !important;
+        }
+
+        /* Animações suaves para transições */
+        .psv-container {
+            transition: all 0.3s ease;
+        }
+
+        /* Melhoria na legenda */
+        .psv-caption {
+            background: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(10px);
+            border-radius: 8px !important;
+            padding: 12px 16px !important;
+            font-size: 16px !important;
+            font-weight: 500 !important;
+            color: white !important;
+            text-align: center !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
     </style>
 </head>
 
@@ -244,7 +360,30 @@
             </div>
 
 
-            <div id="photoSphereViewer" class="hidden h-screen w-full"></div>
+            <div id="photoSphereViewer" class="hidden h-screen w-full relative">
+                <!-- Mensagem de ajuda para controles -->
+                <div id="helpMessage" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg text-sm z-50 hidden">
+                    <div class="text-center">
+                        <p class="font-semibold mb-2">🎮 Controles Disponíveis:</p>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>🖱️ Mouse: Arrastar para mover</div>
+                            <div>🔍 Scroll: Zoom in/out</div>
+                            <div>⌨️ ESC: Fechar</div>
+                            <div>⌨️ F: Tela cheia</div>
+                            <div>⌨️ G: Giroscópio</div>
+                            <div>⌨️ D: Download</div>
+                            <div>⌨️ R: Reset posição</div>
+                            <div>⌨️ 0: Reset zoom</div>
+                        </div>
+                        <button id="closeHelp" class="mt-2 text-indigo-300 hover:text-white">Fechar ajuda</button>
+                    </div>
+                </div>
+                
+                <!-- Botão de ajuda -->
+                <button id="helpButton" class="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-50">
+                    <i data-feather="help-circle"></i>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -568,11 +707,13 @@
                 gallerySection.classList.add('hidden');
                 photoSphereViewer.classList.remove('hidden');
 
-                // Inicializa ou atualiza o Photo Sphere Viewer
+                // Destrói o viewer existente se houver
                 if (window.viewer) {
-                    viewer.setPanorama(imageUrl);
-                    viewer.setCaption(title);
-                } else {
+                    window.viewer.destroy();
+                    window.viewer = null;
+                }
+
+                // Inicializa o Photo Sphere Viewer
                     window.viewer = new PhotoSphereViewer.Viewer({
                         container: photoSphereViewer,
                         panorama: imageUrl,
@@ -584,16 +725,144 @@
                             [PhotoSphereViewer.GyroscopePlugin, { touchmove: true }]
                         ],
 
-                        // 🔹 Barra de navegação com botões personalizados
+                        // 🔹 Barra de navegação com botões personalizados e completos
                         navbar: [
-                            'zoom',
-                            'move',
-                            'download',
-                            'fullscreen',
+                            // Controles de Zoom
+                            {
+                                id: 'zoom-in',
+                                title: 'Aumentar Zoom',
+                                className: 'custom-button zoom-control',
+                                content: '<i data-feather="zoom-in"></i>',
+                                onClick: () => {
+                                    const currentZoom = viewer.getZoomLevel();
+                                    const newZoom = Math.min(currentZoom + 10, 100);
+                                    viewer.zoom(newZoom);
+                                }
+                            },
+                            {
+                                id: 'zoom-out',
+                                title: 'Diminuir Zoom',
+                                className: 'custom-button zoom-control',
+                                content: '<i data-feather="zoom-out"></i>',
+                                onClick: () => {
+                                    const currentZoom = viewer.getZoomLevel();
+                                    const newZoom = Math.max(currentZoom - 10, 10);
+                                    viewer.zoom(newZoom);
+                                }
+                            },
+                            {
+                                id: 'zoom-reset',
+                                title: 'Resetar Zoom',
+                                className: 'custom-button zoom-control',
+                                content: '<i data-feather="maximize-2"></i>',
+                                onClick: () => {
+                                    viewer.zoom(50);
+                                }
+                            },
+                            
+                            // Controles de Movimento
+                            {
+                                id: 'move-up',
+                                title: 'Mover para Cima',
+                                className: 'custom-button move-control',
+                                content: '<i data-feather="chevron-up"></i>',
+                                onClick: () => {
+                                    const currentPosition = viewer.getPosition();
+                                    viewer.rotate({
+                                        longitude: currentPosition.longitude,
+                                        latitude: Math.min(currentPosition.latitude + 0.1, Math.PI/2 - 0.1)
+                                    });
+                                }
+                            },
+                            {
+                                id: 'move-down',
+                                title: 'Mover para Baixo',
+                                className: 'custom-button move-control',
+                                content: '<i data-feather="chevron-down"></i>',
+                                onClick: () => {
+                                    const currentPosition = viewer.getPosition();
+                                    viewer.rotate({
+                                        longitude: currentPosition.longitude,
+                                        latitude: Math.max(currentPosition.latitude - 0.1, -Math.PI/2 + 0.1)
+                                    });
+                                }
+                            },
+                            {
+                                id: 'move-left',
+                                title: 'Mover para Esquerda',
+                                className: 'custom-button move-control',
+                                content: '<i data-feather="chevron-left"></i>',
+                                onClick: () => {
+                                    const currentPosition = viewer.getPosition();
+                                    viewer.rotate({
+                                        longitude: currentPosition.longitude - 0.1,
+                                        latitude: currentPosition.latitude
+                                    });
+                                }
+                            },
+                            {
+                                id: 'move-right',
+                                title: 'Mover para Direita',
+                                className: 'custom-button move-control',
+                                content: '<i data-feather="chevron-right"></i>',
+                                onClick: () => {
+                                    const currentPosition = viewer.getPosition();
+                                    viewer.rotate({
+                                        longitude: currentPosition.longitude + 0.1,
+                                        latitude: currentPosition.latitude
+                                    });
+                                }
+                            },
+                            {
+                                id: 'move-reset',
+                                title: 'Resetar Posição',
+                                className: 'custom-button move-control',
+                                content: '<i data-feather="rotate-ccw"></i>',
+                                onClick: () => {
+                                    viewer.rotate({ longitude: 0, latitude: 0 });
+                                }
+                            },
+                            
+                            // Controle de Tela Cheia
+                            {
+                                id: 'fullscreen',
+                                title: 'Tela Cheia',
+                                className: 'custom-button fullscreen-control',
+                                content: '<i data-feather="maximize"></i>',
+                                onClick: () => {
+                                    if (!document.fullscreenElement) {
+                                        photoSphereViewer.requestFullscreen().catch(err => {
+                                            console.log('Erro ao entrar em tela cheia:', err);
+                                        });
+                                    } else {
+                                        document.exitFullscreen().catch(err => {
+                                            console.log('Erro ao sair da tela cheia:', err);
+                                        });
+                                    }
+                                }
+                            },
+                            
+                            // Controle de Download
+                            {
+                                id: 'download',
+                                title: 'Baixar Imagem',
+                                className: 'custom-button download-control',
+                                content: '<i data-feather="download"></i>',
+                                onClick: () => {
+                                    const link = document.createElement('a');
+                                    link.href = imageUrl;
+                                    link.download = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.jpg';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                }
+                            },
+                            
+                            // Controle de Giroscópio
                             {
                                 id: 'gyro',
                                 title: 'Ativar/Desativar Giroscópio',
-                                className: 'custom-button',
+                                className: 'custom-button gyro-control',
                                 content: '<i data-feather="compass"></i>',
                                 onClick: () => {
                                     const gyroPlugin = viewer.getPlugin(PhotoSphereViewer.GyroscopePlugin);
@@ -611,12 +880,23 @@
                                     }
                                 }
                             },
+                            
+                            // Botão de Fechar
                             {
-                                id: 'back',
-                                title: 'Voltar',
-                                className: 'custom-button',
-                                content: '<i data-feather="arrow-left"></i>',
+                                id: 'close',
+                                title: 'Fechar Visualizador (ESC)',
+                                className: 'custom-button close-control',
+                                content: '<i data-feather="x"></i>',
                                 onClick: () => {
+                                    // Limpa os event listeners
+                                    cleanupViewer();
+                                    
+                                    // Destrói o viewer
+                                    if (window.viewer) {
+                                        window.viewer.destroy();
+                                        window.viewer = null;
+                                    }
+                                    
                                     photoSphereViewer.classList.add('hidden');
                                     
                                     if (currentViewSource === 'preview') {
@@ -651,6 +931,171 @@
                             console.warn('Permissão de giroscópio negada ou não suportada.');
                         });
                     }
+
+                    // 🔹 Adiciona controles de teclado
+                    document.addEventListener('keydown', handleKeyPress);
+                    
+                    // 🔹 Adiciona listener para mudanças de orientação
+                    window.addEventListener('orientationchange', handleOrientationChange);
+                    
+                    // 🔹 Adiciona listener para fullscreen changes
+                    document.addEventListener('fullscreenchange', handleFullscreenChange);
+                    
+                    // 🔹 Configura o botão de ajuda
+                    setupHelpButton();
+                }
+            }
+
+            // 🔹 Função para configurar o botão de ajuda
+            function setupHelpButton() {
+                const helpButton = document.getElementById('helpButton');
+                const helpMessage = document.getElementById('helpMessage');
+                const closeHelpButton = document.getElementById('closeHelp');
+
+                if (helpButton && helpMessage && closeHelpButton) {
+                    helpButton.addEventListener('click', () => {
+                        helpMessage.classList.toggle('hidden');
+                        feather.replace();
+                    });
+
+                    closeHelpButton.addEventListener('click', () => {
+                        helpMessage.classList.add('hidden');
+                    });
+
+                    // Fecha a ajuda quando clica fora dela
+                    helpMessage.addEventListener('click', (e) => {
+                        if (e.target === helpMessage) {
+                            helpMessage.classList.add('hidden');
+                        }
+                    });
+
+                    // Fecha a ajuda com ESC
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape' && !helpMessage.classList.contains('hidden')) {
+                            helpMessage.classList.add('hidden');
+                        }
+                    });
+                }
+            }
+
+            // 🔹 Função para lidar com pressionamento de teclas
+            function handleKeyPress(event) {
+                if (!window.viewer || photoSphereViewer.classList.contains('hidden')) return;
+
+                switch(event.key) {
+                    case 'Escape':
+                        // Fecha o visualizador
+                        const closeButton = document.querySelector('.psv-navbar .close-control');
+                        if (closeButton) closeButton.click();
+                        break;
+                    case '+':
+                    case '=':
+                        // Aumenta zoom
+                        const zoomInButton = document.querySelector('.psv-navbar .zoom-in');
+                        if (zoomInButton) zoomInButton.click();
+                        break;
+                    case '-':
+                        // Diminui zoom
+                        const zoomOutButton = document.querySelector('.psv-navbar .zoom-out');
+                        if (zoomOutButton) zoomOutButton.click();
+                        break;
+                    case '0':
+                        // Reset zoom
+                        const zoomResetButton = document.querySelector('.psv-navbar .zoom-reset');
+                        if (zoomResetButton) zoomResetButton.click();
+                        break;
+                    case 'f':
+                    case 'F':
+                        // Toggle fullscreen
+                        const fullscreenButton = document.querySelector('.psv-navbar .fullscreen');
+                        if (fullscreenButton) fullscreenButton.click();
+                        break;
+                    case 'g':
+                    case 'G':
+                        // Toggle giroscópio
+                        const gyroButton = document.querySelector('.psv-navbar .gyro');
+                        if (gyroButton) gyroButton.click();
+                        break;
+                    case 'd':
+                    case 'D':
+                        // Download
+                        const downloadButton = document.querySelector('.psv-navbar .download');
+                        if (downloadButton) downloadButton.click();
+                        break;
+                    case 'ArrowUp':
+                        // Move para cima
+                        const moveUpButton = document.querySelector('.psv-navbar .move-up');
+                        if (moveUpButton) moveUpButton.click();
+                        break;
+                    case 'ArrowDown':
+                        // Move para baixo
+                        const moveDownButton = document.querySelector('.psv-navbar .move-down');
+                        if (moveDownButton) moveDownButton.click();
+                        break;
+                    case 'ArrowLeft':
+                        // Move para esquerda
+                        const moveLeftButton = document.querySelector('.psv-navbar .move-left');
+                        if (moveLeftButton) moveLeftButton.click();
+                        break;
+                    case 'ArrowRight':
+                        // Move para direita
+                        const moveRightButton = document.querySelector('.psv-navbar .move-right');
+                        if (moveRightButton) moveRightButton.click();
+                        break;
+                    case 'r':
+                    case 'R':
+                        // Reset posição
+                        const moveResetButton = document.querySelector('.psv-navbar .move-reset');
+                        if (moveResetButton) moveResetButton.click();
+                        break;
+                }
+            }
+
+            // 🔹 Função para lidar com mudanças de orientação
+            function handleOrientationChange() {
+                if (!window.viewer || photoSphereViewer.classList.contains('hidden')) return;
+                
+                // Aguarda um pouco para a orientação se estabilizar
+                setTimeout(() => {
+                    if (window.viewer) {
+                        window.viewer.resize();
+                    }
+                }, 500);
+            }
+
+            // 🔹 Função para lidar com mudanças de fullscreen
+            function handleFullscreenChange() {
+                if (!window.viewer || photoSphereViewer.classList.contains('hidden')) return;
+                
+                // Atualiza o ícone do botão de fullscreen
+                const fullscreenButton = document.querySelector('.psv-navbar .fullscreen i');
+                if (fullscreenButton) {
+                    if (document.fullscreenElement) {
+                        fullscreenButton.setAttribute('data-feather', 'minimize');
+                    } else {
+                        fullscreenButton.setAttribute('data-feather', 'maximize');
+                    }
+                    feather.replace();
+                }
+                
+                // Redimensiona o viewer
+                setTimeout(() => {
+                    if (window.viewer) {
+                        window.viewer.resize();
+                    }
+                }, 100);
+            }
+
+            // 🔹 Função para limpar event listeners quando o viewer é fechado
+            function cleanupViewer() {
+                document.removeEventListener('keydown', handleKeyPress);
+                window.removeEventListener('orientationchange', handleOrientationChange);
+                document.removeEventListener('fullscreenchange', handleFullscreenChange);
+                
+                // Limpa a mensagem de ajuda
+                const helpMessage = document.getElementById('helpMessage');
+                if (helpMessage) {
+                    helpMessage.classList.add('hidden');
                 }
             }
 
