@@ -186,21 +186,21 @@
                     </div>
                 </div>
 
-                <div class="preview-thumb relative bg-gray-200 rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform" style="height: 128px;" data-image="assets/Cambira.jpg" data-title="Santa Fé do Sul - SP">
+                <div class="preview-thumb relative bg-gray-200 rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform" style="height: 128px;" data-image="assets/SantaFedoSul1.jpg" data-title="Santa Fé do Sul - SP">
                     <img src="assets/SantaFedoSul1.jpg" class="w-full h-full object-cover" alt="Santa Fé do Sul - SP">
                     <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                         <span class="text-white font-medium">Santa Fé do Sul - SP</span>
                     </div>
                 </div>
 
-                <div class="preview-thumb relative bg-gray-200 rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform" style="height: 128px;" data-image="assets/Cambira.jpg" data-title="Telêmaco Borba - PR">
+                <div class="preview-thumb relative bg-gray-200 rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform" style="height: 128px;" data-image="assets/TelemacoBorba1.09.08.25.jpg" data-title="Telêmaco Borba - PR">
                     <img src="assets/TelemacoBorba1.09.08.25.jpg" class="w-full h-full object-cover" alt="Telêmaco Borba - PR">
                     <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                         <span class="text-white font-medium">Telêmaco Borba - PR</span>
                     </div>
                 </div>
 
-                <div class="preview-thumb relative bg-gray-200 rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform" style="height: 128px;" data-image="assets/Cambira.jpg" data-title="Campo Grande - MS">
+                <div class="preview-thumb relative bg-gray-200 rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform" style="height: 128px;" data-image="assets/cgrande1.20.09.25.jpg" data-title="Campo Grande - MS">
                     <img src="assets/cgrande1.20.09.25.jpg" class="w-full h-full object-cover" alt="Campo Grande - MS">
                     <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                         <span class="text-white font-medium">Campo Grande - MS</span>
@@ -568,10 +568,30 @@
                 gallerySection.classList.add('hidden');
                 photoSphereViewer.classList.remove('hidden');
 
+                // Função utilitária para localizar botão no DOM do viewer
+                function findNavbarButton(id) {
+                    try {
+                        return photoSphereViewer.querySelector('.psv-navbar .psv-button[data-id="' + id + '"]');
+                    } catch (e) {
+                        return null;
+                    }
+                }
+
+                // Função que pede permissão (iOS) se necessário, retorna Promise
+                function requestDeviceOrientationPermissionIfNeeded() {
+                    if (typeof DeviceOrientationEvent !== 'undefined' &&
+                        typeof DeviceOrientationEvent.requestPermission === 'function') {
+                        return DeviceOrientationEvent.requestPermission();
+                    }
+                    return Promise.resolve('granted');
+                }
+
                 // Inicializa ou atualiza o Photo Sphere Viewer
                 if (window.viewer) {
                     viewer.setPanorama(imageUrl);
                     viewer.setCaption(title);
+                    // Atualiza ícones (caso o panorama troque)
+                    feather.replace();
                 } else {
                     window.viewer = new PhotoSphereViewer.Viewer({
                         container: photoSphereViewer,
@@ -579,12 +599,12 @@
                         caption: title,
                         loadingImg: 'https://photo-sphere-viewer.js.org/assets/photosphere-logo.gif',
 
-                        // 🔹 Ativa o plugin de giroscópio
+                        // Ativa o plugin de giroscópio (sem iniciar automaticamente)
                         plugins: [
                             [PhotoSphereViewer.GyroscopePlugin, { touchmove: true }]
                         ],
 
-                        // 🔹 Barra de navegação com botões personalizados
+                        // Barra de navegação com botões personalizados
                         navbar: [
                             'zoom',
                             'move',
@@ -594,43 +614,15 @@
                                 id: 'gyro',
                                 title: 'Ativar/Desativar Giroscópio',
                                 className: 'custom-button',
-                                content: '<i data-feather="compass"></i>',
-                                onClick: () => {
-                                    const gyroPlugin = viewer.getPlugin(PhotoSphereViewer.GyroscopePlugin);
-                                    if (!gyroPlugin) return;
-
-                                    if (gyroPlugin.isEnabled()) {
-                                        gyroPlugin.stop();
-                                        viewer.navbar.getButton('gyro').setActive(false);
-                                    } else {
-                                        gyroPlugin.start().then(() => {
-                                            viewer.navbar.getButton('gyro').setActive(true);
-                                        }).catch(() => {
-                                            alert('⚠️ Permissão de giroscópio negada ou não suportada neste dispositivo.');
-                                        });
-                                    }
-                                }
+                                content: '<i data-feather="compass"></i>'
+                                // onClick será tratado após o viewer estar pronto para garantir acesso ao DOM
                             },
                             {
                                 id: 'back',
                                 title: 'Voltar',
                                 className: 'custom-button',
-                                content: '<i data-feather="arrow-left"></i>',
-                                onClick: () => {
-                                    photoSphereViewer.classList.add('hidden');
-                                    
-                                    if (currentViewSource === 'preview') {
-                                        // Volta para a tela inicial
-                                        welcomeSection.classList.remove('hidden');
-                                        previewGallery.classList.remove('hidden');
-                                        previewGallery.style.display = 'grid';
-                                    } else {
-                                        // Volta para a galeria da cidade
-                                        gallerySection.classList.remove('hidden');
-                                    }
-                                    
-                                    feather.replace();
-                                }
+                                content: '<i data-feather="arrow-left"></i>'
+                                // onClick será tratado após o viewer estar pronto
                             }
                         ],
 
@@ -641,16 +633,126 @@
                         }
                     });
 
-                    // Inicializa ícones Feather
-                    feather.replace();
+                    // Quando o viewer estiver pronto, conectamos os handlers que precisam de DOM / permissão
+                    viewer.once('ready', () => {
+                        // Renderiza os ícones Feather dentro do navbar
+                        feather.replace();
 
-                    // 🔹 Inicia o giroscópio automaticamente (caso o usuário permita)
-                    const gyroPlugin = viewer.getPlugin(PhotoSphereViewer.GyroscopePlugin);
-                    if (gyroPlugin) {
-                        gyroPlugin.start().catch(() => {
-                            console.warn('Permissão de giroscópio negada ou não suportada.');
-                        });
-                    }
+                        // tenta obter botões via API do viewer; se não existir, cai no querySelector
+                        const getButton = (id) => {
+                            try {
+                                if (viewer && viewer.navbar && typeof viewer.navbar.getButton === 'function') {
+                                    const btn = viewer.navbar.getButton(id);
+                                    // Se já for um elemento DOM, retorna direto
+                                    if (btn instanceof HTMLElement) return btn;
+                                    // Se for um objeto, tenta extrair a referência ao elemento
+                                    if (btn && (btn.el || btn.element || btn.node || btn.container || btn.dom)) {
+                                        return btn.el || btn.element || btn.node || btn.container || btn.dom;
+                                    }
+                                }
+                            } catch (e) { /* ignore */ }
+                            // fallback para buscar pelo DOM dentro do container do viewer
+                            return findNavbarButton(id);
+                        };
+
+                        const gyroBtn = getButton('gyro');
+                        const backBtn = getButton('back');
+
+                        // utilitário para anexar handler que funcione em desktop e mobile (click + touchend)
+                        const attachTap = (rawEl, handler) => {
+                            if (!rawEl) return;
+                            // Normaliza o elemento para garantir que é um HTMLElement
+                            const el = (rawEl instanceof HTMLElement) ? rawEl
+                                : (rawEl && (rawEl.el || rawEl.element || rawEl.node || rawEl.container || rawEl.dom));
+                            if (!el || typeof el.addEventListener !== 'function') {
+                                console.warn('attachTap: elemento inválido para botão', rawEl, el);
+                                return;
+                            }
+                            let busy = false;
+                            el.addEventListener('click', (e) => {
+                                if (busy) return;
+                                busy = true;
+                                try { handler(e); } finally { setTimeout(() => busy = false, 300); }
+                            });
+                            el.addEventListener('touchend', (e) => {
+                                if (busy) return;
+                                busy = true;
+                                try { handler(e); } finally { setTimeout(() => busy = false, 300); }
+                                e.preventDefault();
+                            }, { passive: false });
+                        };
+
+                        // Handler para alternar giroscópio com pedido de permissão se necessário
+                        if (gyroBtn) {
+                            attachTap(gyroBtn, () => {
+                                const gyroPlugin = viewer.getPlugin(PhotoSphereViewer.GyroscopePlugin);
+                                if (!gyroPlugin) return;
+
+                                requestDeviceOrientationPermissionIfNeeded()
+                                    .then(response => {
+                                        if (response === 'denied') {
+                                            alert('Permissão de giroscópio negada.');
+                                            return;
+                                        }
+                                        if (gyroPlugin.isEnabled && gyroPlugin.isEnabled()) {
+                                            gyroPlugin.stop().then(() => {
+                                                gyroBtn.classList.remove('psv-button--active');
+                                            }).catch(() => {
+                                                console.warn('Erro ao parar o giroscópio.');
+                                            });
+                                        } else {
+                                            gyroPlugin.start().then(() => {
+                                                gyroBtn.classList.add('psv-button--active');
+                                            }).catch((err) => {
+                                                console.warn('Não foi possível iniciar o giroscópio:', err);
+                                                alert('⚠️ Permissão de giroscópio negada ou não suportada neste dispositivo.');
+                                            });
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.warn('requestDeviceOrientationPermissionIfNeeded erro:', err);
+                                        alert('⚠️ Não foi possível obter permissão de giroscópio.');
+                                    });
+                            });
+                        }
+
+                        // Handler do botão Voltar
+                        if (backBtn) {
+                            attachTap(backBtn, () => {
+                                photoSphereViewer.classList.add('hidden');
+                                
+                                if (currentViewSource === 'preview') {
+                                    // Volta para a tela inicial
+                                    welcomeSection.classList.remove('hidden');
+                                    previewGallery.classList.remove('hidden');
+                                    previewGallery.style.display = 'grid';
+                                } else {
+                                    // Volta para a galeria da cidade
+                                    gallerySection.classList.remove('hidden');
+                                }
+
+                                // remove estado visual do botão gyro
+                                const g = getButton('gyro');
+                                if (g) g.classList.remove('psv-button--active');
+
+                                // re-renderiza icons
+                                feather.replace();
+                            });
+                        }
+
+                        // Tenta iniciar o giroscópio automaticamente (não obrigatório)
+                        const gyroPlugin = viewer.getPlugin(PhotoSphereViewer.GyroscopePlugin);
+                        if (gyroPlugin) {
+                            // Não chame start() automaticamente em mobile sem gesto; aqui apenas tenta sem pedir permissão.
+                            gyroPlugin.start().then(() => {
+                                const g = getButton('gyro');
+                                if (g) g.classList.add('psv-button--active');
+                            }).catch(() => {
+                                // normal: permissões não concedidas ou não suportado
+                                console.warn('Permissão de giroscópio negada ou não suportada.');
+                            });
+                        }
+                    });
                 }
             }
 
