@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Voos Guise - Sua Galeria de Viagens 360°</title>
+    <title>Voos Guise - Sua Galeria de Fotos 360°</title>
 
     <!-- Tailwind (para estilização rápida) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -145,10 +145,14 @@
         <div
             class="sidebar bg-white w-64 md:w-80 border-r border-gray-200 flex flex-col overflow-y-auto absolute md:relative z-20 h-full">
             <div class="p-4 border-b border-gray-200">
-                <h1 class="text-xl font-bold text-indigo-600">Voos Guise</h1>
-                <p class="text-sm text-gray-500">Minha Coleção de Viagens 360°</p>
-            </div>
+                <button id="homeLogo" class="flex items-center gap-3 text-xl font-bold text-indigo-600 hover:opacity-90 focus:outline-none">
+                    <img src="assets/VoosGuiseLogo.png" alt="Voos Guise" class="w-10 h-10 rounded-full" />
+                    <span>Voos Guise</span>
+                </button>
+                 <p class="text-sm text-gray-500">Minha Coleção de Fotos 360°</p>
+             </div>
 
+            <!-- Barra de busca -->
             <div class="p-4">
                 <div class="relative">
                     <input type="text" id="citySearch" placeholder="Buscar cidades..."
@@ -208,17 +212,21 @@
                 <div class="flex items-center space-x-2">
                     <img src="assets/VoosGuiseLogo.png" class="w-10 h-10 rounded-full" alt="Perfil">
                     <div>
-                        <p class="text-sm font-medium">Seu Perfil de Viagem</p>
-                        <a href="#" class="text-xs text-indigo-600">Ver Conta</a>
+                        <p class="text-sm font-medium">Área Restrita</p>
+                        <a href="#" class="text-xs text-indigo-600">Acessar</a>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Overlay que aparece quando a sidebar está aberta em mobile (captura clique fora) -->
+        <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/20 z-10 md:hidden" aria-hidden="true"></div>
+
+        <!-- Botão para alternar a barra lateral em telas pequenas -->
         <button id="sidebarToggle" class="md:hidden fixed top-4 left-4 z-30 bg-white p-2 rounded-full shadow-md">
             <i data-feather="menu"></i>
         </button>
-
+        <!-- Main Content -->   
         <div id="mainContent" class="flex-1 flex flex-col overflow-y-auto bg-gray-100">
             <div id="welcomeSection" class="min-h-screen flex flex-col items-center justify-center p-8 text-center"> 
                 <!-- Vídeo de fundo (loop, mudo) -->
@@ -247,16 +255,18 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- Galeria de Imagens -->
             <div id="previewGallery" class="mt-12 grid grid-cols-2 md:grid-cols-3 gap-3 max-w-4xl mx-auto px-4 pb-8 hidden" style="display: none; min-height: 400px;">
 
+                <!--
                 <div class="preview-thumb relative bg-gray-200 rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform" style="height: 128px;" data-image="assets/Cambira.jpg" data-title="Cambira - PR">
                     <img src="assets/Cambira.jpg" class="w-full h-full object-cover" alt="Cambira - PR">
                     <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                         <span class="text-white font-medium">Cambira - PR</span>
                     </div>
                 </div>
+                
 
                 <div class="preview-thumb relative bg-gray-200 rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform" style="height: 128px;" data-image="assets/SantaFedoSul1.jpg" data-title="Santa Fé do Sul - SP">
                     <img src="assets/SantaFedoSul1.jpg" class="w-full h-full object-cover" alt="Santa Fé do Sul - SP">
@@ -278,8 +288,10 @@
                         <span class="text-white font-medium">Campo Grande - MS</span>
                     </div>
                 </div>
+                -->
             </div>
 
+            <!-- Seção da Galeria Completa por Cidade -->
             <div id="gallerySection" class="hidden flex-1 p-6">
                 <div class="mb-6">
                     <div class="flex items-center justify-between mb-4">
@@ -297,8 +309,9 @@
                 <div id="photoGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 </div>
             </div>
-
-            <!-- SOBRE MIM -->
+        
+            <!--
+             SOBRE MIM SECTION - atualmente desativado
             <div id="aboutSection" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center">
                 <div class="max-w-2xl mx-auto">
                     <h2 class="text-3xl font-bold text-gray-800 mb-4">Sobre Mim</h2>
@@ -311,12 +324,30 @@
                     </p>
                     <button id="backToHome"
                         class="px-6 py-3 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition">
-                        <!--<i data-feather="arrow-left" class="inline mr-2"></i> Voltar ao Início-->
+                        <i data-feather="arrow-left" class="inline mr-2"></i> Voltar ao Início
                         <i class="inline mr-2"></i> Voltar ao Início
                     </button>
                 </div>
             </div>
+            -->
+            
+            <!-- Seção usada como Galeria Completa (substitui a antiga seção "Sobre Mim") -->
+            <div id="aboutSection" class="hidden flex-1 p-6">
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Galeria Completa</h2>
+                            <p class="text-gray-600">Todas as miniaturas de todas as cidades — clique para abrir em 360°</p>
+                        </div>
+                        <button id="backToHome" class="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition">
+                            Voltar ao Início
+                        </button>
+                    </div>
 
+                    <!-- grade que será populada via JS -->
+                    <div id="allPhotoGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                </div>
+            </div>
 
             <div id="photoSphereViewer" class="hidden h-screen w-full"></div>
         </div>
@@ -329,6 +360,39 @@
         document.addEventListener('DOMContentLoaded', function () {
             // Inicializa os ícones Feather
             feather.replace();
+            
+            // Botão do título que volta para a tela inicial
+            const homeLogoBtn = document.getElementById('homeLogo');
+            if (homeLogoBtn) {
+                homeLogoBtn.addEventListener('click', () => {
+                    // Mostra welcome, oculta galerias e viewer
+                    try {
+                        welcomeSection.classList.remove('hidden');
+                        //previewGallery.classList.add('hidden');
+                        //previewGallery.style.display = 'none';
+                        gallerySection.classList.add('hidden');
+                        aboutSection.classList.add('hidden');
+                        photoSphereViewer.classList.add('hidden');
+
+                        // limpa estado do botão gyro se existir
+                        try {
+                            const g = (typeof viewer !== 'undefined' && viewer) ? (viewer.navbar && typeof viewer.navbar.getButton === 'function' ? viewer.navbar.getButton('gyro') : null) : null;
+                            if (g && g.classList) g.classList.remove('psv-button--active');
+                        } catch (e) { /* ignore */ }
+
+                        // tenta parar plugins/autorotate/giroscópio sem destruir o viewer
+                        try {
+                            if (window.viewer) {
+                                const gp = viewer.getPlugin && viewer.getPlugin(PhotoSphereViewer.GyroscopePlugin);
+                                if (gp && typeof gp.stop === 'function') gp.stop();
+                                if (typeof viewer.stopAutorotate === 'function') viewer.stopAutorotate();
+                            }
+                        } catch (e) { /* ignore */ }
+                    } catch (e) {
+                        console.warn('Erro ao retornar ao home:', e);
+                    }
+                }, { passive: true });
+            }
 
             // Dados de amostra para fotos 360° (em uma aplicação real, viriam de uma API)
             // As chaves são mantidas em inglês para corresponder ao data-city do HTML.
@@ -407,8 +471,8 @@
             const gallerySubtitle = document.getElementById('gallerySubtitle');
             const photoSphereViewer = document.getElementById('photoSphereViewer');
             const cityButtons = document.querySelectorAll('.city-btn');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebar = document.querySelector('.sidebar');
+            //const sidebarToggle = document.getElementById('sidebarToggle');
+            //const sidebar = document.querySelector('.sidebar');
             const citySearch = document.getElementById('citySearch');
 
             // 🔹 NOVOS ELEMENTOS ADICIONADOS
@@ -417,7 +481,7 @@
             const backToHomeFromGalleryBtn = document.getElementById('backToHomeFromGallery');
             const exploreBtn = document.getElementById('exploreBtn');
             const aboutBtn = document.getElementById('aboutBtn');
-            const previewGallery = document.getElementById('previewGallery');
+            //const previewGallery = document.getElementById('previewGallery');
 
             // Variável para rastrear de onde o usuário veio
             let currentViewSource = 'gallery'; // 'gallery' ou 'preview'
@@ -439,10 +503,49 @@
                 });
             });
 
-            // Alternar barra lateral móvel
-            sidebarToggle.addEventListener('click', function () {
-                sidebar.classList.toggle('open');
-            });
+            //botão para alternar a barra lateral em telas pequenas
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            if (sidebarToggle && sidebar && sidebarOverlay) {
+                // abrir/fechar sidebar ao clicar no botão do menu
+                sidebarToggle.addEventListener('click', function () {
+                    const opened = sidebar.classList.toggle('open');
+                    if (opened) {
+                        // esconde o botão do menu enquanto a sidebar estiver aberta
+                        sidebarToggle.classList.add('hidden');
+                        // mostra overlay (captura clique fora)
+                        sidebarOverlay.classList.remove('hidden');
+                    } else {
+                        sidebarToggle.classList.remove('hidden');
+                        sidebarOverlay.classList.add('hidden');
+                    }
+                }, { passive: true });
+
+                // clicar no overlay fecha a sidebar e mostra o botão novamente
+                sidebarOverlay.addEventListener('click', function () {
+                    sidebar.classList.remove('open');
+                    sidebarOverlay.classList.add('hidden');
+                    sidebarToggle.classList.remove('hidden');
+                }, { passive: true });
+
+                // se clicar em um link / botão dentro da sidebar em mobile, fecha a sidebar
+                sidebar.querySelectorAll('a, button').forEach(el => {
+                    el.addEventListener('click', function (e) {
+                        // ignora o botão que abre o submenu (se quiser manter, ajuste)
+                        if (sidebar.classList.contains('open')) {
+                            // pequena timeout para permitir navegação antes de fechar
+                            setTimeout(() => {
+                                sidebar.classList.remove('open');
+                                sidebarOverlay.classList.add('hidden');
+                                sidebarToggle.classList.remove('hidden');
+                            }, 50);
+                        }
+                    }, { passive: true });
+                });
+            }
+            
 
             // Handler de clique do botão da cidade
             cityButtons.forEach(button => {
@@ -457,7 +560,7 @@
 
 
             // 🔹 NOVA FUNCIONALIDADE DOS BOTÕES (INÍCIO)
-
+            /*
             // Botão "Explorar Galeria"
             console.log('Verificando elementos DOM:');
             console.log('exploreBtn:', exploreBtn);
@@ -505,16 +608,79 @@
                 console.error('exploreBtn:', exploreBtn);
                 console.error('previewGallery:', previewGallery);
             }
+                */
+
+            // Novo Botão "Explorar Galeria"
+            // Botão "Explorar Galeria" — abre a seção 'aboutSection' que agora é a Galeria Completa
+            const allPhotoGrid = document.getElementById('allPhotoGrid');
+            const backToHome = document.getElementById('backToHome');
+
+            if (exploreBtn && allPhotoGrid) {
+                exploreBtn.addEventListener('click', function () {
+                    // marca origem para o botão voltar do viewer
+                    currentViewSource = 'preview';
+
+                    // oculta welcome e mostra a seção que usamos como galeria completa
+                    welcomeSection.classList.add('hidden');
+                    gallerySection.classList.add('hidden');
+                    //previewGallery.classList.add('hidden');
+                    //previewGallery.style.display = 'none';
+                    aboutSection.classList.remove('hidden');
+
+                    // popula a grade com todas as fotos de todas as cidades
+                    allPhotoGrid.innerHTML = '';
+                    Object.keys(photoData).forEach(cityKey => {
+                        const photos = photoData[cityKey] || [];
+                        photos.forEach(photo => {
+                            const el = document.createElement('div');
+                            el.className = 'bg-white rounded-lg overflow-hidden shadow cursor-pointer';
+                            el.innerHTML = `
+                                <div class="relative aspect-video">
+                                    <img src="${photo.url}" alt="${photo.title}" class="w-full h-full object-cover">
+                                    <div class="absolute left-0 right-0 bottom-0 p-2 bg-gradient-to-t from-black/60 to-transparent text-white">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-sm">${photo.title}</span>
+                                            <small class="text-xs text-gray-200">${cityNames[cityKey] || cityKey}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            el.addEventListener('click', function () {
+                                // abre viewer
+                                aboutSection.classList.add('hidden');
+                                photoSphereViewer.classList.remove('hidden');
+                                openPhotoSphereViewer(photo.url, photo.title);
+                            }, { passive: true });
+                            allPhotoGrid.appendChild(el);
+                        });
+                    });
+                    // opcional: scroll até seção
+                    setTimeout(() => aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+                }, { passive: true });
+            } else {
+                console.error('ERRO: exploreBtn ou allPhotoGrid não encontrados', { exploreBtn, allPhotoGrid });
+            }
+
+            // Botão voltar do header da seção (volta ao welcome)
+            if (backToHome) {
+                backToHome.addEventListener('click', function () {
+                    aboutSection.classList.add('hidden');
+                    welcomeSection.classList.remove('hidden');
+                    //previewGallery.classList.add('hidden');
+                    //previewGallery.style.display = 'none';
+                }, { passive: true });
+            }
+
+
+
 
 
             // Botão "Sobre Mim"
-            if (aboutBtn && welcomeSection && aboutSection) {
+            if (aboutBtn) {
+                // abre página independente em vez de mostrar a seção interna
                 aboutBtn.addEventListener('click', function () {
-                    welcomeSection.classList.add('hidden');
-                    previewGallery.classList.add('hidden'); // Oculta a galeria de preview
-                    previewGallery.style.display = 'none'; // Força o display none
-                    aboutSection.classList.remove('hidden');
-                });
+                    window.location.href = 'sobremim.html';
+                }, { passive: true });
             }
 
             // Botão "Voltar ao Início" (que está na seção Sobre Mim)
@@ -523,8 +689,8 @@
                 backToHomeBtn.addEventListener('click', function () {
                     console.log('Botão Voltar ao Início clicado!');
                     aboutSection.classList.add('hidden');
-                    previewGallery.classList.add('hidden'); // Oculta a galeria de preview
-                    previewGallery.style.display = 'none'; // Força o display none
+                    //previewGallery.classList.add('hidden'); // Oculta a galeria de preview
+                    //previewGallery.style.display = 'none'; // Força o display none
                     welcomeSection.classList.remove('hidden');
                 });
             } else {
@@ -541,8 +707,8 @@
                 backToHomeFromGalleryBtn.addEventListener('click', function () {
                     console.log('Botão Voltar ao Início da galeria clicado!');
                     gallerySection.classList.add('hidden');
-                    previewGallery.classList.add('hidden'); // Oculta a galeria de preview
-                    previewGallery.style.display = 'none'; // Força o display none
+                    //previewGallery.classList.add('hidden'); // Oculta a galeria de preview
+                    //previewGallery.style.display = 'none'; // Força o display none
                     welcomeSection.classList.remove('hidden');
                 });
             } else {
@@ -567,7 +733,7 @@
                         
                         console.log('Miniatura clicada:', imageTitle, imageUrl);
                         console.log('Elementos DOM:', {
-                            previewGallery: previewGallery,
+                            //previewGallery: previewGallery,
                             welcomeSection: welcomeSection,
                             photoSphereViewer: photoSphereViewer
                         });
@@ -576,8 +742,8 @@
                         currentViewSource = 'preview';
                         
                         // Oculta a galeria de preview e mostra o visualizador 360°
-                        previewGallery.classList.add('hidden');
-                        previewGallery.style.display = 'none';
+                        //previewGallery.classList.add('hidden');
+                        //previewGallery.style.display = 'none';
                         welcomeSection.classList.add('hidden');
                         photoSphereViewer.classList.remove('hidden');
                         
@@ -603,8 +769,8 @@
                 // Mostra a seção da galeria e oculta as outras
                 welcomeSection.classList.add('hidden');
                 aboutSection.classList.add('hidden'); // Garante que a seção "Sobre" também seja ocultada
-                previewGallery.classList.add('hidden'); // Oculta a galeria de preview
-                previewGallery.style.display = 'none'; // Força o display none
+                //previewGallery.classList.add('hidden'); // Oculta a galeria de preview
+                //previewGallery.style.display = 'none'; // Força o display none
                 gallerySection.classList.remove('hidden');
                 photoSphereViewer.classList.add('hidden');
 
@@ -807,8 +973,8 @@
                                 if (currentViewSource === 'preview') {
                                     // Volta para a tela inicial
                                     welcomeSection.classList.remove('hidden');
-                                    previewGallery.classList.remove('hidden');
-                                    previewGallery.style.display = 'grid';
+                                    //previewGallery.classList.remove('hidden');
+                                    //previewGallery.style.display = 'grid';
                                 } else {
                                     // Volta para a galeria da cidade
                                     gallerySection.classList.remove('hidden');
@@ -837,9 +1003,7 @@
                         }
                     });
                 }
-            }
-
-
+            };
         });
     </script>
 </body>
